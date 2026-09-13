@@ -19,13 +19,13 @@ h_T = 25.0        # 对流换热 W/(m^2 K)
 h_m = 8.0e-7      # 对流传质 m/s
 
 
-# ============================================================
+
 # 1. 环境数据读取
-# ============================================================
+
 def load_environment(path=PCHIP_FILE, fallback=ATT1_FILE):
     """返回 (t, Ta, Ca)，单位 s, °C, kg/kg"""
     if os.path.exists(path):
-        print(f'[INFO] 读取环境数据：{path}')
+        print(f'读取环境数据：{path}')
         df = pd.read_excel(path)
         cols = df.columns.tolist()
         if '时间(s)' in cols:
@@ -39,7 +39,7 @@ def load_environment(path=PCHIP_FILE, fallback=ATT1_FILE):
         idx = np.argsort(t)
         return t[idx], Ta[idx], Ca[idx]
 
-    print(f'[WARN] 未找到 {path}，回退到 {fallback}，线性插值到 1 s')
+    print(f'未找到 {path}，回退到 {fallback}，线性插值到 1 s')
     df = pd.read_excel(fallback)
     t = df['时间'].values.astype(float)
     Ta = df['温度'].values.astype(float)
@@ -48,9 +48,9 @@ def load_environment(path=PCHIP_FILE, fallback=ATT1_FILE):
     return t_fine, np.interp(t_fine, t, Ta), np.interp(t_fine, t, Ca)
 
 
-# ============================================================
+
 # 2. 附录 3 经验公式
-# ============================================================
+
 def rho_of_C(C):
     return 650.0 + 128.0 * C
 
@@ -83,9 +83,9 @@ def H_of_C(C):
     return H
 
 
-# ============================================================
+
 # 3. 网格
-# ============================================================
+
 def make_grid(R, N):
     dr = R / N
     r = np.linspace(0.0, R, N + 1)
@@ -99,9 +99,9 @@ def make_grid(R, N):
     return r, dr, V, A_face, A_surf
 
 
-# ============================================================
+
 # 4. 单步显式推进（Kirchhoff 势界面通量）
-# ============================================================
+
 def step_explicit_q2(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf):
     Nn = len(T) - 1
 
@@ -151,9 +151,9 @@ def step_explicit_q2(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf):
     return T_new, C_new
 
 
-# ============================================================
+
 # 5. 备选界面格式（调和 / 算术平均）
-# ============================================================
+
 def step_explicit_q2_alt(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf,
                          scheme='harmonic', D_const=None):
     Nn = len(T) - 1
@@ -207,9 +207,9 @@ def step_explicit_q2_alt(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf,
     return T_new, C_new
 
 
-# ============================================================
+
 # 6. 问题二主求解
-# ============================================================
+
 def solve_problem2(N=20, dt=1.0, t_end=10800.0,
                    t_env=None, Ta_env=None, Ca_env=None,
                    interface_scheme='kirchhoff',
@@ -229,7 +229,7 @@ def solve_problem2(N=20, dt=1.0, t_end=10800.0,
     C_hist[0] = C
 
     if verbose:
-        print(f'[INFO] 问题二求解：N={N}, dr={dr*1000:.2f} mm, '
+        print(f'问题二求解：N={N}, dr={dr*1000:.2f} mm, '
               f'dt={dt:.4f}s, t_end={t_end}s, scheme={interface_scheme}')
 
     for n in range(1, n_rows):
@@ -254,9 +254,9 @@ def solve_problem2(N=20, dt=1.0, t_end=10800.0,
     return t_arr, r, T_hist, C_hist
 
 
-# ============================================================
+
 # 7. 模型验证
-# ============================================================
+
 # ---------- 解析解：无限长圆柱，恒定表面值 ----------
 def analytic_cylinder(r, t, R, V0, Vinf, alpha, n_terms=300):
     lambdas = jn_zeros(0, n_terms)
@@ -268,9 +268,9 @@ def analytic_cylinder(r, t, R, V0, Vinf, alpha, n_terms=300):
 
 
 # ---------- V1：热方程退化解析 ----------
-# ============================================================
+
 # V1（修正版）：退化解析，第一类边界 T(R,t)=50 °C
-# ============================================================
+
 def verify_V1_fixed():
     print('\n' + '=' * 60)
     print('V1 退化解析：冻结 C=2.55，表面恒定 T=50 °C（第一类边界）')
@@ -310,9 +310,9 @@ def verify_V1_fixed():
     return err_max_all
 
 
-# ============================================================
+
 # V2（修正版）：退化解析，第一类边界 C(R,t)=0.02，D=1e-8 常数
-# ============================================================
+
 def verify_V2_fixed():
     print('\n' + '=' * 60)
     print('V2 退化解析：冻结 T=323.315 K，D=1e-8 常数，'
@@ -415,9 +415,9 @@ def verify_V6():
     print(f'3h 表面 C（算术平均）= {C_a[-1][-1]:.4f}')
 
 
-# ============================================================
+
 # 8. 结果输出
-# ============================================================
+
 def write_result2(t_arr, r, T_hist, C_hist):
     wb = Workbook()
     ws_T = wb.active
@@ -434,9 +434,9 @@ def write_result2(t_arr, r, T_hist, C_hist):
                                             for v in data[n]]
             ws.append(row)
 
-    out_path = os.path.join(OUTPUT_DIR, 'result2.xlsx')
+    out_path = os.path.join(ROOT, '..', '..', '结果', 'result2.xlsx')
     wb.save(out_path)
-    print(f'[INFO] 已保存 {out_path}')
+    print(f'已保存 {out_path}')
 
 
 def print_tables(t_arr, r, T_hist, C_hist):
@@ -458,9 +458,9 @@ def print_tables(t_arr, r, T_hist, C_hist):
         n = int(round(t_h * 3600 / (t_arr[1] - t_arr[0])))
         vals = [C_hist[n, i] for i in idx]
         print(f'{t_h:>6} | ' + ' | '.join([f'{v:10.4f}' for v in vals]))
-# ============================================================
+
 # 问题二可视化
-# ============================================================
+
 import os
 import numpy as np
 import matplotlib
@@ -572,11 +572,11 @@ def plot_q2(t_arr, r, T_hist, C_hist):
     plt.savefig(os.path.join(OUTPUT_DIR, 'fig_q2_C_disk.png'), dpi=300)
     plt.close()
 
-    print('[INFO] 问题二 4 张图已保存到', OUTPUT_DIR)
+    print(' 问题二 4 张图已保存到', OUTPUT_DIR)
 
-# ============================================================
+
 # 9. 主程序
-# ============================================================
+
 if __name__ == '__main__':
     # ---------- 主求解 ----------
     t_env, Ta_env, Ca_env = load_environment()

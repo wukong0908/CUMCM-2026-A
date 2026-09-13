@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q3 outputs — drying endpoint + 表5 + result3.xlsx.
-Reuses Q2 M2 full-process solution (Kirchhoff FVM, dr=1mm, dt=1s).
-Spec: t_dry = min{t : max_j C <= 0.15}; table5 rows 6..54 h + endpoint row;
-result3 = 60 s steps to 205920 s + final endpoint row 205952 s, 0.1 cm spacing.
 """
 import os
 import sys

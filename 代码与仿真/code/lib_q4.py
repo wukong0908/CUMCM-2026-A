@@ -1,17 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q4 solver — drying with moving boundary (shrinking radius), per 规格卡_Q4.md.
-Model A (main): material coordinate xi = r/R(t) in [0,1], N=20, DXI=0.05.
-  - appendix-4 properties: rho=760+90C, cp=1850+2150C/(C+1), k=0.12+0.20C/(C+1),
-    D=4.2e-4*exp(-0.30/C)*exp(-3850/T)
-  - Kirchhoff potential with A_C=0.30, exact steady interface flux
-  - convection from shrinkage: (xi*Rdot/R) d/dxi, center diff interior, backward at surface
-  - BC: attachment1 interp on [0,14400] s, D01 tail after (50.165 C / 0.04986)
-  - explicit FVM, dt=1 s, sequential coupling (heat with C^n -> T^{n+1}; mass with T^{n+1})
-Model B (baseline): Euler fixed grid dr=1mm, domain [0,R(t)] truncated, surface = last node.
-Model C (ablation): same as A with R(t) == R0 frozen.
-Outputs: endpoint t_dry (max C <= 0.15), 表6 (6 h steps, cols 0/0.5/1.0/surface),
-result4.xlsx (60 s steps, cols 0..1.2 cm + surface).
 """
 import os
 import sys

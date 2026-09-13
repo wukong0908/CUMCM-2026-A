@@ -10,11 +10,11 @@ from scipy.interpolate import (
 BASE = os.path.dirname(os.path.abspath(__file__))          # 脚本所在目录 code/
 DATA = os.path.join(BASE, "..", "附件", "附件1.xlsx")        # 输入数据(相对脚本定位)
 
-# ========== 字体设置 ==========
+
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'Heiti TC', 'Hiragino Sans GB']
 plt.rcParams['axes.unicode_minus'] = False
 
-# ========== 1. 读取数据 ==========
+
 df = pd.read_excel(DATA, sheet_name='Sheet1')
 print("列名：", df.columns.tolist())
 
@@ -24,11 +24,11 @@ C_original = df['水分浓度'].values.astype(float)
 
 print(f"原始数据点数：{len(t_original)}")
 
-# ========== 2. 构造每秒时间轴 ==========
+
 t_new = np.arange(t_original.min(), t_original.max() + 1, 1.0)
 print(f"插值后点数：{len(t_new)}")
 
-# ========== 3. 定义 5 种插值方法 ==========
+
 methods = {
     '线性': {
         'T': interp1d(t_original, T_original, kind='linear', fill_value='extrapolate'),
@@ -62,7 +62,7 @@ methods = {
     },
 }
 
-# ========== 4. 逐方法绘图 ==========
+
 for name, m in methods.items():
     T_new = m['T'](t_new)
     C_new = m['C'](t_new)

@@ -1,19 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q1 solver — radial 1D transient heat + moisture diffusion in a cylinder.
-Implements 规格卡_Q1.md (Stage 4) exactly: explicit FVM, dr=0.001 m, dt=1 s,
-one-way decoupling (heat first, then mass).
-
-Models:
-  M1 (main):  interface D = harmonic mean
-  M0 (baseline): interface D = arithmetic mean
-Verification:
-  V1: heat vs Bessel-series analytic solution (constant T_inf)
-  V2: mass vs Bessel-series analytic solution (constant D, constant C_inf)
-  V3: global energy / moisture conservation vs boundary flux integral
-  V4: grid convergence (dr, dr/2, dr/4)
-Output:
-  result1.xlsx (sheets 温度 / 水分浓度, 4 decimals, template format)
 """
 import os
 import numpy as np

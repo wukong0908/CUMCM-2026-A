@@ -6,7 +6,7 @@ from scipy.interpolate import PchipInterpolator, interp1d, CubicSpline, Univaria
 BASE = os.path.dirname(os.path.abspath(__file__))          # 脚本所在目录 code/
 DATA = os.path.join(BASE, "..", "附件", "附件1.xlsx")        # 输入数据(相对脚本定位)
 
-# ========== 1. 读取原始数据 ==========
+
 df = pd.read_excel(DATA, sheet_name='Sheet1')
 t_original = df['时间'].values.astype(float)
 T_original = df['温度'].values.astype(float)
@@ -15,7 +15,7 @@ C_original = df['水分浓度'].values.astype(float)
 # 插值到每秒
 t_new = np.arange(t_original.min(), t_original.max() + 1, 1.0)
 
-# ========== 2. 定义插值方法 ==========
+
 def make_interpolators(t, y):
     methods = {}
     methods['线性'] = interp1d(t, y, kind='linear', fill_value='extrapolate')
@@ -24,7 +24,7 @@ def make_interpolators(t, y):
     methods['平滑样条'] = UnivariateSpline(t, y, k=3, s=len(t) * 0.01)
     return methods
 
-# ========== 3. CV-RMSE（留一交叉验证） ==========
+
 def loocv_rmse(t, y, method_name):
     n = len(t)
     errors = []
@@ -39,7 +39,7 @@ def loocv_rmse(t, y, method_name):
         errors.append((y_test - y_pred) ** 2)
     return np.sqrt(np.mean(errors))
 
-# ========== 4. 计算所有指标 ==========
+
 def evaluate_all(t_original, y_original, label):
     print(f"\n{'='*70}")
     print(f"评价对象：{label}")
@@ -104,11 +104,11 @@ def evaluate_all(t_original, y_original, label):
 
     return df_results, y_std, y_range
 
-# ========== 5. 执行评价 ==========
+
 results_T, std_T, range_T = evaluate_all(t_original, T_original, '温度')
 results_C, std_C, range_C = evaluate_all(t_original, C_original, '水分浓度')
 
-# ========== 6. 单独输出 PCHIP 的判断结果 ==========
+
 def judge_pchip(results, std, range_, label):
     print(f"\n{'='*70}")
     print(f"PCHIP 判断结果：{label}")
@@ -150,7 +150,7 @@ def judge_pchip(results, std, range_, label):
 judge_pchip(results_T, std_T, range_T, '温度')
 judge_pchip(results_C, std_C, range_C, '水分浓度')
 
-# ========== 7. 保存到 Excel ==========
+
 with pd.ExcelWriter(os.path.join(BASE, '..', '..', '结果', '插值指标计算.xlsx')) as writer:
     results_T.to_excel(writer, sheet_name='温度', index=False)
     results_C.to_excel(writer, sheet_name='水分浓度', index=False)

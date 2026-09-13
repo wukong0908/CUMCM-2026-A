@@ -1,12 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 2026 A题 问题四：考虑尺寸变化的药材烘干时间确定
-物质坐标动边界显式 FVM + Kirchhoff 势界面通量
-
-输出：
-  - result4.xlsx
-  - 表 6 打印
-  - 可视化图
 """
 
 import os
@@ -18,9 +11,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from openpyxl import Workbook
 
-# ============================================================
+
 # 0. 路径
-# ============================================================
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(ROOT, 'output_q4')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -28,9 +21,9 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 PCHIP_FILE = os.path.join(ROOT, '..', '..', '结果', '插值结果_PCHIP.xlsx')   # 附件1插值结果
 R_FILE     = os.path.join(ROOT, '..', '附件', '附件2.xlsx')            # 附件2 半径数据
 
-# ============================================================
+
 # 1. 物理参数
-# ============================================================
+
 R0 = 0.02          # 初始半径 m
 L  = 0.25          # 长度 m
 T0 = 301.15        # 初始温度 K（对应 28 °C）
@@ -47,9 +40,9 @@ DXI = 1.0 / NXI    # Δξ = 0.05
 
 T_END = 259200.0   # 3 天
 
-# ============================================================
+
 # 2. 附录 4 物性
-# ============================================================
+
 def rho_fun(C):
     return 760.0 + 90.0 * C
 
@@ -64,9 +57,9 @@ def D_fun(C, T):
     C = np.maximum(C, 1e-8)
     return 4.2e-4 * np.exp(-0.30 / C) * np.exp(-3850.0 / T)
 
-# ============================================================
+
 # 3. Kirchhoff 势
-# ============================================================
+
 def H_fun(C):
     """
     H(C) = ∫_0^C e^{-0.30/s} ds
@@ -74,15 +67,12 @@ def H_fun(C):
     """
     C = np.asarray(C, dtype=float)
     C = np.maximum(C, 1e-12)
-    try:
-        from scipy.special import exp1
-        return C * np.exp(-0.30 / C) - 0.30 * exp1(0.30 / C)
-    except ImportError:
-        return C * np.exp(-0.30 / C)
+    from scipy.special import exp1
+    return C * np.exp(-0.30 / C) - 0.30 * exp1(0.30 / C)
 
-# ============================================================
+
 # 4. 环境边界
-# ============================================================
+
 def load_environment(path=PCHIP_FILE):
     if not os.path.exists(path):
         raise FileNotFoundError(f'找不到文件：{path}')
@@ -115,9 +105,9 @@ def make_env_funcs(t_env, T_env, C_env, t_switch=4 * 3600.0,
 
     return T_inf, C_inf
 
-# ============================================================
+
 # 5. 半径数据 R(t)
-# ============================================================
+
 def load_radius(path=R_FILE):
     """
     读取附件2：时间(s)，半径(cm)
@@ -163,9 +153,9 @@ def make_radius_funcs(t_R, R_R):
 
     return R_fun, Rdot_fun
 
-# ============================================================
+
 # 6. 网格与几何（物质坐标）
-# ============================================================
+
 def make_grid(NXI, L):
     """
     物质坐标 ξ ∈ [0,1]，节点 ξ_j = j Δξ
@@ -189,9 +179,9 @@ def make_grid(NXI, L):
 
     return xi, dxi, V_bar, Axi_face, Axi_surf
 
-# ============================================================
+
 # 7. 单步显式推进（物质坐标，动边界）
-# ============================================================
+
 def step_explicit(T, C, Ta, Ca, R, Rdot, dt,
                   xi, dxi, V_bar, Axi_face, Axi_surf):
     """
@@ -281,9 +271,9 @@ def step_explicit(T, C, Ta, Ca, R, Rdot, dt,
 
     return T_new, C_new
 
-# ============================================================
+
 # 8. 全程求解
-# ============================================================
+
 def solve_full(dt=DT, t_end=T_END, store_every=60):
     t_env, T_env, C_env = load_environment()
     T_inf, C_inf = make_env_funcs(t_env, T_env, C_env)
@@ -314,7 +304,7 @@ def solve_full(dt=DT, t_end=T_END, store_every=60):
     t_dry = None
     k_store = 1
 
-    print(f'[INFO] 问题四求解：NXI={NXI}, Δξ={dxi:.3f}, Δt={dt}s, t_end={t_end}s')
+    print(f'问题四求解：NXI={NXI}, Δξ={dxi:.3f}, Δt={dt}s, t_end={t_end}s')
 
     for n in range(1, n_steps + 1):
         t_now = n * dt
@@ -338,7 +328,7 @@ def solve_full(dt=DT, t_end=T_END, store_every=60):
 
         if t_dry is None and C_max <= C_DRY:
             t_dry = t_now
-            print(f'[INFO] 烘干终点命中 t_dry = {t_dry:.1f} s = {t_dry/3600:.2f} h')
+            print(f'烘干终点命中 t_dry = {t_dry:.1f} s = {t_dry/3600:.2f} h')
 
         if n % 3600 == 0:
             print(f'  t={t_now/3600:6.2f} h  R={R*100:.3f} cm  '
@@ -354,9 +344,9 @@ def solve_full(dt=DT, t_end=T_END, store_every=60):
                 R_hist=R_hist, C_max_hist=C_max_hist, t_dry=t_dry,
                 N=NXI, dxi=dxi)
 
-# ============================================================
+
 # 9. 物质坐标 -> 物理半径插值
-# ============================================================
+
 def interp_at_r(C_row, xi, R, r_target):
     """
     给定物质坐标下的 C(ξ)，物理半径 r_target，返回 C(r_target)
@@ -367,9 +357,9 @@ def interp_at_r(C_row, xi, R, r_target):
         return np.nan
     return float(np.interp(xi_target, xi, C_row))
 
-# ============================================================
+
 # 10. 打印表 6
-# ============================================================
+
 def print_table6(res):
     t_hist = res['t_hist']
     xi = res['xi']
@@ -418,9 +408,9 @@ def print_table6(res):
 
     print('=' * 78 + '\n')
 
-# ============================================================
+
 # 11. 保存 result4.xlsx
-# ============================================================
+
 def write_result4(res, out_path='result4.xlsx'):
     t_hist = res['t_hist']
     xi = res['xi']
@@ -439,7 +429,7 @@ def write_result4(res, out_path='result4.xlsx'):
     ws.append(header)
 
     R_min = R_hist.min()
-    print(f'[INFO] 最小半径 R_min = {R_min*100:.3f} cm')
+    print(f'最小半径 R_min = {R_min*100:.3f} cm')
 
     for n in range(len(t_hist)):
         R = R_hist[n]
@@ -463,11 +453,11 @@ def write_result4(res, out_path='result4.xlsx'):
         ws.append(row)
 
     wb.save(out_path)
-    print(f'[INFO] 已保存 {out_path}')
+    print(f'已保存 {out_path}')
 
-# ============================================================
+
 # 12. 可视化
-# ============================================================
+
 def plot_endpoint(res):
     t_hist = res['t_hist']
     C_max = res['C_max_hist']
@@ -502,7 +492,7 @@ def plot_endpoint(res):
     out = os.path.join(OUTPUT_DIR, 'q4_endpoint.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
 def plot_profiles(res):
@@ -530,7 +520,7 @@ def plot_profiles(res):
     out = os.path.join(OUTPUT_DIR, 'q4_profiles.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
 def plot_shrink(res):
@@ -559,17 +549,17 @@ def plot_shrink(res):
     out = os.path.join(OUTPUT_DIR, 'q4_shrink_effect.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 13. 主程序
-# ============================================================
+
 if __name__ == '__main__':
     res = solve_full(dt=DT, t_end=T_END, store_every=60)
 
     print_table6(res)
-    write_result4(res, out_path=os.path.join(OUTPUT_DIR, 'result4.xlsx'))
+    write_result4(res, out_path=os.path.join(ROOT, '..', '..', '结果', 'result4.xlsx'))
 
     plot_endpoint(res)
     plot_profiles(res)

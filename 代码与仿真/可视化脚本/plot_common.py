@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-"""可视化公共模块:路径、字体、npz 三级取数、save。
-
-四个画图脚本(画图_问题一~四.py)共用本模块。
-取数顺序:结果\ → math\结果\(只读回退) → 现场重算并存 结果\。
+"""
+可视化公共模块:路径、字体、npz 三级取数、save。
 """
 import os
 import sys
@@ -10,8 +7,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))      # 可视化脚本\
 CODE = os.path.join(HERE, "..", "code")                 # 最终提交代码
 RES = os.path.join(HERE, "..", "..", "结果")                  # 结果与 npz 缓存
-FIG = os.path.join(HERE, "..", "figs")                  # 输出图目录
-RES2 = os.path.join(HERE, "..", "..", "结果")           # math\结果 只读缓存回退
+FIG = os.path.join(HERE, "..", "..", "结果", "figs")                  # 输出图目录
+RES2 = os.path.join(HERE, "..", "..", "..", "结果")           # math\结果 只读缓存回退
 os.makedirs(FIG, exist_ok=True)
 sys.path.insert(0, CODE)
 

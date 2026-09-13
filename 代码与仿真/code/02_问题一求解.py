@@ -1,11 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 2026 A题 问题一
-严格按照论文模型：
-圆柱坐标系下一维轴对称径向模型
-FVM + 显式欧拉 + 调和平均界面扩散系数
-轴心半控制体、表面 Robin 边界
-输出：result1.xlsx + 4 张图
 """
 
 import os
@@ -18,9 +12,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from openpyxl import Workbook
 
-# ============================================================
+
 # 0. 路径与开关
-# ============================================================
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(ROOT, 'newpage1')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -29,9 +23,9 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 PCHIP_FILE = os.path.join(ROOT, '..', '..', '结果', '插值结果_PCHIP.xlsx')
 COMSOL_FILE = os.path.join(ROOT, '..', 'COMSOL仿真', '温度.csv')
 
-# ============================================================
+
 # 1. 物理参数（附录2）
-# ============================================================
+
 R = 0.02                 # 药材半径 m
 L = 0.25                 # 药材长度 m（一维模型中约去，仅用于面积/体积计算）
 rho = 820.0              # 密度 kg/m^3
@@ -52,9 +46,9 @@ def D_func(C):
     return 7.0e-9 * np.exp(-0.89 / np.maximum(C, 1e-8))
 
 
-# ============================================================
+
 # 2. 读取环境数据（PCHIP 插值后的每秒数据）
-# ============================================================
+
 def load_environment(path=PCHIP_FILE):
     """
     返回 (t, Ta, Ca)。
@@ -81,9 +75,9 @@ def load_environment(path=PCHIP_FILE):
     return t, Ta, Ca
 
 
-# ============================================================
+
 # 3. 网格与几何量（FVM）
-# ============================================================
+
 def make_grid(R, N):
     """
     节点：r_j = j * dr, j = 0..N
@@ -107,9 +101,9 @@ def make_grid(R, N):
     return r, dr, V, A_face, A_surf
 
 
-# ============================================================
+
 # 4. 显式 FVM 单步推进
-# ============================================================
+
 def step_explicit(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf):
     """
     一步显式 FVM。
@@ -168,9 +162,9 @@ def step_explicit(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf):
     return T_new, C_new
 
 
-# ============================================================
+
 # 5. 主求解
-# ============================================================
+
 def solve_problem1(N=20, dt=1.0, t_end=1800.0):
     """
     N=20 时 dr=1mm，节点恰好落在 0,0.1,...,2.0 cm 输出位置。
@@ -190,7 +184,7 @@ def solve_problem1(N=20, dt=1.0, t_end=1800.0):
     T_hist[0] = T
     C_hist[0] = C
 
-    print(f'[INFO] N={N}, dr={dr*1000:.3f} mm, dt={dt}s, t_end={t_end}s')
+    print(f'N={N}, dr={dr*1000:.3f} mm, dt={dt}s, t_end={t_end}s')
 
     for n in range(1, n_rows):
         t_now = n * dt
@@ -207,9 +201,9 @@ def solve_problem1(N=20, dt=1.0, t_end=1800.0):
     return t_arr, r, T_hist, C_hist
 
 
-# ============================================================
+
 # 6. 输出 result1.xlsx
-# ============================================================
+
 def write_result1(t_arr, r, T_hist, C_hist):
     wb = Workbook()
     ws_T = wb.active
@@ -225,14 +219,14 @@ def write_result1(t_arr, r, T_hist, C_hist):
             row = [int(round(t_arr[n]))] + [round(float(v), 4) for v in data[n]]
             ws.append(row)
 
-    out = os.path.join(OUTPUT_DIR, 'result1.xlsx')
+    out = os.path.join(ROOT, '..', '..', '结果', 'result1.xlsx')
     wb.save(out)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 7. 打印论文表 1、表 2
-# ============================================================
+
 def print_tables(t_arr, r, T_hist, C_hist):
     times_req = [100, 300, 600, 900, 1200, 1500, 1800]
     dists_req = [0.0, 0.5, 1.0, 1.5, 2.0]
@@ -254,9 +248,9 @@ def print_tables(t_arr, r, T_hist, C_hist):
         print(f'{t:>6} | ' + ' | '.join([f'{v:10.4f}' for v in vals]))
 
 
-# ============================================================
+
 # 8. 图 1、图 2：温度/水分随时间曲线（r=0, 0.5, 1, 1.5, 2 cm）
-# ============================================================
+
 def plot_curves(t_arr, r, T_hist, C_hist):
     plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Songti SC', 'Heiti SC',
                                        'Arial Unicode MS', 'SimHei']
@@ -290,12 +284,12 @@ def plot_curves(t_arr, r, T_hist, C_hist):
     plt.savefig(os.path.join(OUTPUT_DIR, 'fig_C_time.png'), dpi=300)
     plt.close()
 
-    print('[INFO] 已保存 fig_T_time.png, fig_C_time.png')
+    print(' 已保存 fig_T_time.png, fig_C_time.png')
 
 
-# ============================================================
+
 # 9. 图 3、图 4：二维圆平面温度/水分云图（取 1800 s）
-# ============================================================
+
 def plot_disk(t_arr, r, T_hist, C_hist, t_snap=1800):
     plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Songti SC', 'Heiti SC',
                                        'Arial Unicode MS', 'SimHei']
@@ -347,7 +341,7 @@ def plot_disk(t_arr, r, T_hist, C_hist, t_snap=1800):
     plt.savefig(os.path.join(OUTPUT_DIR, 'fig_C_disk.png'), dpi=300)
     plt.close()
 
-    print('[INFO] 已保存 fig_T_disk.png, fig_C_disk.png')
+    print(' 已保存 fig_T_disk.png, fig_C_disk.png')
 # -*- coding: utf-8 -*-
 """
 从 COMSOL 导出的 txt 中读取温度-时间数据并画线
@@ -360,9 +354,9 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-# ============================================================
+
 # 1. 文件路径
-# ============================================================
+
 TXT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         '..', 'COMSOL仿真', '温度.csv')
 
@@ -370,9 +364,9 @@ OUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outs')
 os.makedirs(OUT_DIR, exist_ok=True)
 
 
-# ============================================================
+
 # 2. 读取并解析
-# ============================================================
+
 def read_data(path):
     """
     返回 list of (t, T)，每段是一个位置的温度-时间序列
@@ -410,9 +404,9 @@ def read_data(path):
     return blocks
 
 
-# ============================================================
+
 # 3. 画线
-# ============================================================
+
 def plot_blocks(blocks):
     plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Songti SC',
                                        'Heiti SC', 'Arial Unicode MS', 'SimHei']
@@ -433,13 +427,13 @@ def plot_blocks(blocks):
     out = os.path.join(OUT_DIR, 'comsol_T_time.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
 
-# ============================================================
+
 # 10. 主程序
-# ============================================================
+
 if __name__ == '__main__':
     t_arr, r, T_hist, C_hist = solve_problem1(N=20, dt=1.0, t_end=1800.0)
 
@@ -449,7 +443,7 @@ if __name__ == '__main__':
     plot_curves(t_arr, r, T_hist, C_hist)
     plot_disk(t_arr, r, T_hist, C_hist, t_snap=1800)
     blocks = read_data(TXT_FILE)
-    print(f'[INFO] 共解析出 {len(blocks)} 段数据')
+    print(f'共解析出 {len(blocks)} 段数据')
     for i, (t, T) in enumerate(blocks):
         print(f'  段 {i+1}：{len(t)} 点，时间范围 {t.min():.0f}~{t.max():.0f} s，'
               f'温度范围 {T.min():.4f}~{T.max():.4f} ℃')

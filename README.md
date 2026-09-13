@@ -28,10 +28,12 @@
 │   │   ├─ 画图_问题四.py                 5 张
 │   │   └─ 画图_COMSOL对比.py             数值解 vs COMSOL(表 X/表 Y 配图)
 │   ├─ COMSOL仿真\            drying_2d.mph + 温度.csv + 浓度.csv(5 位置 × 1801 时刻)
-│   └─ 附件\                  附件1.xlsx、附件2.xlsx(插值输入数据)
-└─ 结果\                     全部输出:交付件 / 全程解缓存 / 数据图
-    ├─ result1–4.xlsx                四问交付件
-    ├─ 插值结果_PCHIP.xlsx            PCHIP 插值产物(四个求解脚本的输入)
+│   ├─ 附件\                  附件1.xlsx、附件2.xlsx(插值输入数据)
+│   └─ requirements.txt       Python 依赖清单
+└─ 结果\                     全部输出:交付件 / 缓存 / 数据图
+    ├─ result1–4.xlsx                四问交付件(四个求解脚本的输出)
+    ├─ 插值结果_PCHIP.xlsx            PCHIP 插值产物(求解输入,01_插值.py 生成)
+    ├─ 插值指标计算.xlsx              插值评价输出(01_插值评价.py 生成)
     ├─ q2_pchip_arrays.npz           Q2/Q3 全程解
     ├─ q3_pchip_compare.npz          调和/算术界面取法全程解
     ├─ q4_pchip_arrays.npz           Q4 动边界全程解
@@ -42,7 +44,7 @@
 
 ## 环境
 
-Python 3.10+,包:numpy、scipy、pandas、openpyxl、matplotlib;绘图字体 Microsoft YaHei/SimHei。COMSOL 模型用 6.3 生成。
+Python 3.10+,依赖见 `代码与仿真/requirements.txt`;绘图字体 Microsoft YaHei/SimHei。COMSOL 模型用 6.3 生成。
 
 ## 代码用法
 
@@ -50,11 +52,11 @@ Python 3.10+,包:numpy、scipy、pandas、openpyxl、matplotlib;绘图字体 Mic
 
 ```bash
 cd 代码与仿真/code
-python 01_插值.py          # 生成 插值结果_PCHIP.xlsx(结果\,求解输入)+ 五种方法对比
-python 01_插值评价.py       # 打印 CV-RMSE 与光滑性指标(表 6.4.1)
+python 01_插值.py          # 生成 结果\插值结果_PCHIP.xlsx(求解输入)+ 五种方法对比
+python 01_插值评价.py       # 打印 CV-RMSE 与光滑性指标(表 6.4.1),输出 结果\插值指标计算.xlsx
 ```
 
-**求解**(输出写 `../../结果/result*.xlsx`)
+**求解**(result1–4.xlsx 写入 `结果\`)
 
 ```bash
 python 02_问题一求解.py    # result1.xlsx
@@ -70,7 +72,7 @@ python 05_灵敏度.py        # 四张扰动表(问题三/四部分为全程重�
 python 06_验证_问题一.py   # 或 06_验证_问题二三.py / 06_验证_问题四.py
 ```
 
-**可视化**(输出 `../../结果/figs/`,缺 npz 缓存时自动重算)
+**可视化**(输出 `结果\figs\`,缺 npz 缓存时自动重算)
 
 ```bash
 cd 代码与仿真/可视化脚本

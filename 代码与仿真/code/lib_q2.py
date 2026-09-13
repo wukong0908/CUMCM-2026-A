@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q2 solver — whole drying process (0–259200 s), appendix-3 strongly coupled model.
-Implements 规格卡_Q2.md exactly:
-  - explicit FVM, dr=0.001 m, dt=1 s, nodes at r=j*dr (incl. boundary)
-  - sequential coupling per step: heat with C^n -> T^{n+1}; then mass with (C^n, T^{n+1}) -> C^{n+1}
-  - harmonic interface k and D; rho, cp at node values
-  - BC: attachment1 interp on [0,14400] s; beyond, np.interp clamps to tail value
-        (D01 main: tail T=50.165 C, C=0.04986). Cross-check variant: asymptote override.
-Outputs: 表3/表4 (0.5–3 h x 5 radii), result2.xlsx (0–10800 s, sheets 温度/水分浓度).
-Verification (Stage 6) lives in verify_q2.py.
 """
 import os
 import sys
@@ -204,7 +195,6 @@ def main():
     dt, dr, t_end = 1.0, 0.001, 259200.0
     nsteps = int(round(t_end / dt))
 
-    # D01 main BC (interp clamps to tail beyond 14400 s)
     T_inf, C_inf = bc_arrays(t_data, T_data, C_data, nsteps, dt)
     T, C, cour, m_bal = solve(T_inf, C_inf, t_end, dr, dt, flux_scheme="kirchhoff")
 

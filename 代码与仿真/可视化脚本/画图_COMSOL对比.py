@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
-"""问题一 数值解 vs COMSOL 二维仿真对比图(fig_q1_comsol.png)。
-
-数据:COMSOL仿真\温度.csv / 浓度.csv(5 块 × 1801 点,块序 = r 0→2 cm);
-数值解:lib_q1 显式 FVM,PCHIP 边界(表 1 同口径)。
+"""
+问题一 数值解 vs COMSOL 二维仿真对比图(fig_q1_comsol.png)。
 """
 from plot_common import *
 

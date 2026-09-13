@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q1 Stage 6 verification / robustness suite.
-R1: 2D axisymmetric finite cylinder (r,z) vs 1D infinite cylinder (midplane)
-R2: parameter perturbation +-10%
-R3: smoothed BC vs raw linear-interp BC
-R4: attachment-1 data perturbation
 """
 import sys
 import os

@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q4 Stage 6 verification / robustness suite (per 规格卡_Q4.md §11).
-V1: transform correctness — A(freeze_R) vs B(freeze_R) pointwise (machine precision)
-V2: model comparison — A(moving) vs B(moving truncated) endpoints + sampled profiles
-V3: grid convergence — A N=20 dt=1 vs N=40 dt=0.25 (x constant), endpoint
-V5: degenerate analytic — freeze_R + freeze C/T vs Bessel series (appendix-4 props)
-R1: parameter perturbation +-10% (7 knobs, full 3 days) -> endpoint
-R2: attachment2 processing — smoothed R, R +-1% -> endpoint
-R3: BC asymptote cross-check (50.15 C / 0.0507)
-Results -> 结果/verify_q4_results.json
 """
 import os
 import sys
@@ -44,7 +35,7 @@ def run_A(dt=1.0, N=20, DXI=0.05, t_end=T_END, store_every=1, **kw):
     return Q4.solve_A(T_inf, C_inf, t_end, dt, N, DXI, store_every=store_every, **kw)
 
 
-# ================= V1: A(freeze_R) vs B(freeze_R) =================
+
 def v1_transform():
     print("== V1 transform correctness (A frozen vs B frozen, 3 days) ==", flush=True)
     nsteps = int(round(T_END / 1.0))
@@ -59,7 +50,7 @@ def v1_transform():
     return dict(dT=dT, dC=dC, Cc72_A=CA[i72, 0], Cc72_B=CB[i72, 0])
 
 
-# ================= V2: A(moving) vs B(moving) =================
+
 def v2_models():
     print("== V2 model comparison (A moving vs B moving, 3 days) ==", flush=True)
     nsteps = int(round(T_END / 1.0))
@@ -82,7 +73,7 @@ def v2_models():
     return dict(t_dry_A=eA, t_dry_B=eB, max_diff=max(d[4] for d in diffs))
 
 
-# ================= V3: grid convergence (N=40, dt=0.25) =================
+
 def v3_convergence():
     print("== V3 grid convergence (N=40 dxi=0.025 dt=0.25, t_end=190000 s) ==",
           flush=True)
@@ -99,7 +90,7 @@ def v3_convergence():
                 ledger=led.max())
 
 
-# ================= V5: degenerate analytic (Bessel series) =================
+
 def v5_analytic():
     print("== V5 degenerate analytic (freeze_R, frozen props, 3 h) ==", flush=True)
     r_m = [rr / 100.0 for rr in r_cm]
@@ -137,7 +128,7 @@ def v5_analytic():
     return out
 
 
-# ================= R1: parameter perturbation =================
+
 def r1_params():
     print("== R1 parameter perturbation +-10% (7 knobs, full 3 days) ==", flush=True)
     knobs = [("D0", ["D0"]), ("A_C", ["A_C"]), ("A_T", ["A_T"]),
@@ -165,7 +156,7 @@ def r1_params():
     return rows
 
 
-# ================= R2: attachment2 processing =================
+
 def r2_attach2():
     print("== R2 attachment2 processing (smooth w5 / +-1%) ==", flush=True)
     w = 5
@@ -185,7 +176,7 @@ def r2_attach2():
     return rows
 
 
-# ================= R3: BC asymptote cross-check =================
+
 def r3_asymptote():
     print("== R3 asymptote BC cross-check (50.15 C / 0.0507) ==", flush=True)
     nsteps = int(round(T_END / 1.0))

@@ -1,16 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 Q2 Stage 6 verification / robustness suite (per 规格卡_Q2.md v1.1).
-V1: degenerate heat (C frozen at 2.55 / 0.15) vs Bessel-series analytic
-V2: degenerate mass (T frozen, constant D) vs Bessel-series analytic
-V4: grid convergence (dr, dr/2, dr/4) over full 3 days: endpoint + 72h values
-V5: asymptotic consistency (constant BC from t=0, 5-day run)
-V6: flux-scheme comparison (kirchhoff / harmonic / arithmetic, full 3 days)
-R1: parameter perturbation +-10% (7 knobs, dt=2 s)
-R2: smoothed attachment BC vs raw
-R3: attachment perturbation (T +-0.5 C, C +-5%)
-R4: D01 asymptote cross-check (T=50.15 C, C=0.0507)
-All full-run results collected into 结果/verify_q2_results.json.
 """
 import os
 import sys
@@ -47,7 +36,7 @@ def full_run(T_inf, C_inf, dr, dt, scheme="kirchhoff", t_end=T_END, **kw):
                                               T[i, 0] - 273.15, T[i, -1] - 273.15)
 
 
-# ================= V1: degenerate heat, C frozen =================
+
 def v1_heat_analytic(C_f, label):
     k = Q.k_c(np.array(C_f)); rho = Q.rho_c(np.array(C_f)); cp = Q.cp_c(np.array(C_f))
     alpha = float(k / (rho * cp))
@@ -68,7 +57,7 @@ def v1_heat_analytic(C_f, label):
     return err.max(), err[-1].max()
 
 
-# ================= V2: degenerate mass, T frozen + constant D =================
+
 def v2_mass_analytic():
     Dc = 1e-8
     T_f = 323.315
@@ -89,7 +78,7 @@ def v2_mass_analytic():
     return err.max(), err[-1].max()
 
 
-# ================= V4: grid convergence =================
+
 def v4_convergence():
     print("== V4 grid convergence (full 3 days, kirchhoff) ==", flush=True)
     rows = []
@@ -110,7 +99,7 @@ def v4_convergence():
     return rows
 
 
-# ================= V5: asymptotic consistency =================
+
 def v5_asymptotic():
     print("== V5 asymptotic (const BC from t=0, 5 days) ==", flush=True)
     t_end5 = 432000.0
@@ -133,7 +122,7 @@ def v5_asymptotic():
                 Cc72=float(C[129600, 0]), Cc120=float(C[216000, 0]))
 
 
-# ================= V6: flux scheme comparison =================
+
 def v6_schemes():
     print("== V6 flux schemes (full 3 days, dr=1mm dt=1s) ==", flush=True)
     rows = {}
@@ -153,7 +142,7 @@ def v6_schemes():
     return rows
 
 
-# ================= R1: parameter perturbation =================
+
 def r1_params():
     print("== R1 parameter perturbation +-10% (dt=1 s, full 3 days) ==", flush=True)
     knobs = [
@@ -191,7 +180,7 @@ def r1_params():
     return rows
 
 
-# ================= R2: smoothed BC =================
+
 def r2_smooth():
     print("== R2 smoothed BC (window 5, edge reflect, dt=1 s) ==", flush=True)
     w = 5
@@ -213,7 +202,7 @@ def r2_smooth():
                 dCs3h=C[10800, -1] - baseC[10800, -1])
 
 
-# ================= R3: attachment perturbation =================
+
 def r3_perturb():
     print("== R3 attachment perturbation (dt=1 s) ==", flush=True)
     cases = {
@@ -235,7 +224,7 @@ def r3_perturb():
     return rows
 
 
-# ================= R4: D01 asymptote cross-check =================
+
 def r4_asymptote():
     print("== R4 asymptote BC cross-check (50.15 C / 0.0507, dt=1 s) ==", flush=True)
     nsteps = int(round(T_END / 1.0))

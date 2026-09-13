@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
 """
 2026 A题 问题三：全程强耦合 + Kirchhoff 势界面通量 + 烘干终点判据
-输出：
-  - result3.xlsx
-  - 表 5 打印
-  - 5 张可视化图
 """
 
 import os
@@ -20,18 +15,18 @@ import matplotlib.font_manager as fm
 # 设置 Mac 上的中文字体
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'Heiti TC', 'Hiragino Sans GB']
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
-# ============================================================
+
 # 0. 路径
-# ============================================================
+
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(ROOT, 'output_q3')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-PCHIP_FILE = os.path.join(ROOT, '插值结果_PCHIP.xlsx')   # 附件1插值结果
+PCHIP_FILE = os.path.join(ROOT, '..', '..', '结果', '插值结果_PCHIP.xlsx')   # 附件1插值结果
 
-# ============================================================
+
 # 1. 物理参数
-# ============================================================
+
 R = 0.02          # 半径 m
 L = 0.25          # 长度 m
 T0 = 28.0         # 初始温度 °C
@@ -52,9 +47,9 @@ N = int(round(R / DR))   # 20
 T_END = 3 * 24 * 3600.0  # 259200 s
 
 
-# ============================================================
+
 # 2. 附录 3 物性
-# ============================================================
+
 def rho_fun(C):
     return 650.0 + 128.0 * C
 
@@ -70,9 +65,9 @@ def D_fun(C, T):
     return 2.4e-3 * np.exp(-0.45 / C) * np.exp(-3850.0 / T)
 
 
-# ============================================================
+
 # 3. Kirchhoff 势
-# ============================================================
+
 def H_fun(C):
     """
     H(C) = ∫_0^C e^{-0.45/s} ds
@@ -81,17 +76,13 @@ def H_fun(C):
     """
     C = np.asarray(C, dtype=float)
     C = np.maximum(C, 1e-12)
-    try:
-        from scipy.special import exp1
-        return C * np.exp(-0.45 / C) - 0.45 * exp1(0.45 / C)
-    except ImportError:
-        # 简易近似：小 C 时 e^{-0.45/C} 极小，H ≈ C e^{-0.45/C}
-        return C * np.exp(-0.45 / C)
+    from scipy.special import exp1
+    return C * np.exp(-0.45 / C) - 0.45 * exp1(0.45 / C)
 
 
-# ============================================================
+
 # 4. 环境边界
-# ============================================================
+
 def load_environment(path=PCHIP_FILE):
     """
     读取附件1插值结果，返回 t_env, T_env, C_env
@@ -133,9 +124,9 @@ def make_env_funcs(t_env, T_env, C_env, t_switch=4 * 3600.0,
     return T_inf, C_inf
 
 
-# ============================================================
+
 # 5. 网格与几何
-# ============================================================
+
 def make_grid(R, N, L):
     dr = R / N
     r = np.linspace(0.0, R, N + 1)
@@ -149,9 +140,9 @@ def make_grid(R, N, L):
     return r, dr, V, A_face, A_surf
 
 
-# ============================================================
+
 # 6. 单步显式推进（顺序：先热后质，Kirchhoff 势）
-# ============================================================
+
 def step_explicit(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf,
                   scheme='kirchhoff'):
     """
@@ -213,9 +204,9 @@ def step_explicit(T, C, Ta, Ca, dt, r, dr, V, A_face, A_surf,
     return T_new, C_new
 
 
-# ============================================================
+
 # 7. 全程求解 + 烘干终点搜索
-# ============================================================
+
 def solve_full(scheme='kirchhoff', dt=DT, t_end=T_END,
                store_every=60):
     """
@@ -246,7 +237,7 @@ def solve_full(scheme='kirchhoff', dt=DT, t_end=T_END,
     C_max_hist[0] = C.max()
 
     k_store = 1
-    print(f'[INFO] 全程求解 scheme={scheme}, dt={dt}s, t_end={t_end}s')
+    print(f'全程求解 scheme={scheme}, dt={dt}s, t_end={t_end}s')
 
     for n in range(1, n_steps + 1):
         t_now = n * dt
@@ -267,7 +258,7 @@ def solve_full(scheme='kirchhoff', dt=DT, t_end=T_END,
 
         if t_dry is None and C_max <= C_DRY:
             t_dry = t_now
-            print(f'[INFO] 烘干终点命中 t_dry = {t_dry:.1f} s = {t_dry/3600:.2f} h')
+            print(f'烘干终点命中 t_dry = {t_dry:.1f} s = {t_dry/3600:.2f} h')
 
         if n % 3600 == 0:
             print(f'  t={t_now/3600:6.2f} h  C_max={C_max:.4f}  '
@@ -283,9 +274,9 @@ def solve_full(scheme='kirchhoff', dt=DT, t_end=T_END,
                 N=N, dr=dr)
 
 
-# ============================================================
+
 # 8. 打印表 5
-# ============================================================
+
 def print_table5(t_hist, r, C_hist, t_dry):
     times_h = [6, 12, 18, 24, 30, 36, 42, 48, 54]
     dists_cm = [0.0, 0.5, 1.0, 1.5, 2.0]
@@ -320,9 +311,9 @@ def print_table5(t_hist, r, C_hist, t_dry):
     print('=' * 78 + '\n')
 
 
-# ============================================================
+
 # 9. 保存 result3.xlsx
-# ============================================================
+
 def write_result3(t_hist, r, C_hist, t_dry, out_path='result3.xlsx'):
     wb = Workbook()
     ws = wb.active
@@ -342,12 +333,12 @@ def write_result3(t_hist, r, C_hist, t_dry, out_path='result3.xlsx'):
         ws.append(row)
 
     wb.save(out_path)
-    print(f'[INFO] 已保存 {out_path}')
+    print(f'已保存 {out_path}')
 
 
-# ============================================================
+
 # 10. 可视化 1：全场最大水分浓度 + 首达放大
-# ============================================================
+
 def plot_endpoint(res):
     t_hist = res['t_hist']
     C_max = res['C_max_hist']
@@ -382,12 +373,12 @@ def plot_endpoint(res):
     out = os.path.join(OUTPUT_DIR, 'q3_endpoint.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 11. 可视化 2：三种界面通量取法对比
-# ============================================================
+
 def plot_scheme_compare():
     schemes = ['kirchhoff', 'harmonic', 'arithmetic']
     labels = {'kirchhoff': 'Kirchhoff 势（本文）',
@@ -413,12 +404,12 @@ def plot_scheme_compare():
     out = os.path.join(OUTPUT_DIR, 'q3_scheme_compare.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 12. 可视化 3：极轴稳定性探针
-# ============================================================
+
 def plot_stab_probe():
     C_freeze = 0.15
     alpha = k_fun(C_freeze) / (rho_fun(C_freeze) * cp_fun(C_freeze))
@@ -457,12 +448,12 @@ def plot_stab_probe():
     out = os.path.join(OUTPUT_DIR, 'q3_stab_probe.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 13. 可视化 4：不同时刻水分浓度剖面
-# ============================================================
+
 def plot_profiles(res):
     t_hist = res['t_hist']
     r = res['r']
@@ -485,12 +476,12 @@ def plot_profiles(res):
     out = os.path.join(OUTPUT_DIR, 'q3_profiles.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 14. 可视化 5：全程干燥时间序列
-# ============================================================
+
 def plot_process(res):
     t_hist = res['t_hist']
     C_hist = res['C_hist']
@@ -510,12 +501,12 @@ def plot_process(res):
     out = os.path.join(OUTPUT_DIR, 'q3_process.png')
     fig.savefig(out, dpi=300)
     plt.close(fig)
-    print(f'[INFO] 已保存 {out}')
+    print(f'已保存 {out}')
 
 
-# ============================================================
+
 # 15. 主程序
-# ============================================================
+
 if __name__ == '__main__':
     # ---------- 主求解（Kirchhoff 势） ----------
     res = solve_full(scheme='kirchhoff', dt=DT, t_end=T_END, store_every=60)
@@ -530,7 +521,7 @@ if __name__ == '__main__':
 
     # ---------- 保存 result3.xlsx ----------
     write_result3(t_hist, r, C_hist, t_dry,
-                  out_path=os.path.join(OUTPUT_DIR, 'result3.xlsx'))
+                  out_path=os.path.join(ROOT, '..', '..', '结果', 'result3.xlsx'))
 
     # ---------- 可视化 ----------
     plot_endpoint(res)
