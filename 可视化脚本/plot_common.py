@@ -31,7 +31,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 
 def load_or_make(name, make):
-    """取数顺序:结果\ → math\结果\ → 现场重算并存 结果\。"""
+    """取数顺序:本地结果目录 -> math 结果只读回退 -> 现场重算并存本地。"""
     for d in (RES, RES2):
         p = os.path.join(d, name)
         if os.path.exists(p):
