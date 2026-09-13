@@ -19,7 +19,7 @@ from scipy.special import exp1
 import lib_q1 as S            # reuse: read_attach1, build_grid, ATT1, constants R/L
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUTDIR = os.path.join(BASE, "结果")
+OUTDIR = os.path.join(BASE, "..", "结果")
 os.makedirs(OUTDIR, exist_ok=True)
 
 # ------------------------- constants (SI) -------------------------

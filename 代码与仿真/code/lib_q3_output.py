@@ -14,7 +14,7 @@ import lib_q2 as Q
 import lib_q1 as S
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUTDIR = os.path.join(BASE, "结果")
+OUTDIR = os.path.join(BASE, "..", "结果")
 os.makedirs(OUTDIR, exist_ok=True)
 
 THRESH = 0.15

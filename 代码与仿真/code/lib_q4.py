@@ -23,7 +23,7 @@ import lib_q1 as S            # reuse read_attach1
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ATT2 = os.path.join(BASE, "附件", "附件2.xlsx")
-OUTDIR = os.path.join(BASE, "结果")
+OUTDIR = os.path.join(BASE, "..", "结果")
 os.makedirs(OUTDIR, exist_ok=True)
 
 # ------------------------- constants (SI) -------------------------

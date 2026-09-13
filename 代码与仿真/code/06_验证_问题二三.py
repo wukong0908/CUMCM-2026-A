@@ -21,7 +21,7 @@ import lib_q1 as S
 import lib_q2 as Q
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(BASE, "结果", "verify_q2_results.json")
+OUT = os.path.join(BASE, "..", "结果", "verify_q2_results.json")
 T_END = 259200.0
 r_cm = [0.0, 0.5, 1.0, 1.5, 2.0]
 jdx = [int(round(rr / 0.1)) for rr in r_cm]

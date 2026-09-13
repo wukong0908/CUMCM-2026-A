@@ -25,7 +25,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(ROOT, 'output_q4')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-PCHIP_FILE = os.path.join(ROOT, '插值结果_PCHIP.xlsx')   # 附件1插值结果
+PCHIP_FILE = os.path.join(ROOT, '..', '..', '结果', '插值结果_PCHIP.xlsx')   # 附件1插值结果
 R_FILE     = os.path.join(ROOT, '..', '附件', '附件2.xlsx')            # 附件2 半径数据
 
 # ============================================================

@@ -23,7 +23,7 @@ from scipy.optimize import brentq
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ATT1 = os.path.join(BASE, "附件", "附件1.xlsx")
-OUTDIR = os.path.join(BASE, "结果")
+OUTDIR = os.path.join(BASE, "..", "结果")
 os.makedirs(OUTDIR, exist_ok=True)
 
 # ------------------------- constants (SI) -------------------------

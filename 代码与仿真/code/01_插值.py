@@ -101,6 +101,6 @@ for name, m in methods.items():
         '温度(°C)': T_new,
         '水分浓度(kg/kg)': C_new,
     })
-    df_interp.to_excel(f'插值结果_{name}.xlsx', index=False)
+    df_interp.to_excel(os.path.join(BASE, '..', '..', '结果', f'插值结果_{name}.xlsx'), index=False)
 
 print("\n全部完成：共 10 张图，5 个 Excel 文件。")

@@ -151,7 +151,7 @@ judge_pchip(results_T, std_T, range_T, '温度')
 judge_pchip(results_C, std_C, range_C, '水分浓度')
 
 # ========== 7. 保存到 Excel ==========
-with pd.ExcelWriter('插值指标计算.xlsx') as writer:
+with pd.ExcelWriter(os.path.join(BASE, '..', '..', '结果', '插值指标计算.xlsx')) as writer:
     results_T.to_excel(writer, sheet_name='温度', index=False)
     results_C.to_excel(writer, sheet_name='水分浓度', index=False)
 print("\n结果已保存到 插值指标计算.xlsx")

@@ -6,7 +6,7 @@ from openpyxl import Workbook
 from scipy.special import exp1, j0, j1, jn_zeros
 # 路径与基本参数
 ROOT = os.path.dirname(os.path.abspath(__file__))
-PCHIP_FILE = os.path.join(ROOT, '插值结果_PCHIP.xlsx')
+PCHIP_FILE = os.path.join(ROOT, '..', '..', '结果', '插值结果_PCHIP.xlsx')
 ATT1_FILE = os.path.join(ROOT, '..', '附件', '附件1.xlsx')
 OUTPUT_DIR = os.path.join(ROOT, 'newpage2')
 os.makedirs(OUTPUT_DIR, exist_ok=True)

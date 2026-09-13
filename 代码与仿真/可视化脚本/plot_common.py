@@ -9,7 +9,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))      # 可视化脚本\
 CODE = os.path.join(HERE, "..", "code")                 # 最终提交代码
-RES = os.path.join(HERE, "..", "结果")                  # 结果与 npz 缓存
+RES = os.path.join(HERE, "..", "..", "结果")                  # 结果与 npz 缓存
 FIG = os.path.join(HERE, "..", "figs")                  # 输出图目录
 RES2 = os.path.join(HERE, "..", "..", "结果")           # math\结果 只读缓存回退
 os.makedirs(FIG, exist_ok=True)

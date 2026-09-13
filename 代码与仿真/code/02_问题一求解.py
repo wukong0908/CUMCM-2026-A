@@ -26,7 +26,7 @@ OUTPUT_DIR = os.path.join(ROOT, 'newpage1')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # 你的 PCHIP 插值文件路径，按实际改
-PCHIP_FILE = os.path.join(ROOT, '插值结果_PCHIP.xlsx')
+PCHIP_FILE = os.path.join(ROOT, '..', '..', '结果', '插值结果_PCHIP.xlsx')
 COMSOL_FILE = os.path.join(ROOT, '..', 'COMSOL仿真', '温度.csv')
 
 # ============================================================

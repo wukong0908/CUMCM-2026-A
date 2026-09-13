@@ -1,5 +1,9 @@
 # 2026 高教社杯 A 题 药材烘干 — 支撑材料
 
+**仓库地址**: https://github.com/wukong0908/CUMCM-2026-A(公开)
+
+**本地位置**: `D:\WuKong\Desktop\research-projects\math\2026全国大学生数学建模竞赛_A题支撑材料\`(本仓库 git 根目录)
+
 论文「中药材热风烘干的机理探究」的评审支撑材料:最终论文 PDF、全部代码、16 张数据图、四问交付件与 COMSOL 二维仿真模型。
 
 **数据口径**:附件 1 采用 PCHIP 插值(4 h 后取末端值恒定);result1–4.xlsx 与论文表 1–表 6 同源。
